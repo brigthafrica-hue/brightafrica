@@ -127,7 +127,7 @@ export default function ActWithUs() {
                 activeTab === 'donate' ? 'bg-ba-red text-white shadow-lg' : 'text-ba-text-secondary hover:text-ba-red'
               }`}
             >
-              ❤️ Faire un don
+              Faire un don
             </button>
             <button
               onClick={() => { setActiveTab('membership'); setStatusMsg(null); }}
@@ -135,7 +135,7 @@ export default function ActWithUs() {
                 activeTab === 'membership' ? 'bg-ba-green text-white shadow-lg' : 'text-ba-text-secondary hover:text-ba-green'
               }`}
             >
-              🤝 Devenir Membre
+              Devenir Membre
             </button>
           </div>
         </div>

@@ -115,10 +115,6 @@ export default function AdminLogin() {
             )}
           </button>
         </form>
-
-        <p style={{ fontSize: '0.75rem', color: '#64748B', textAlign: 'center', marginTop: '1.75rem' }}>
-          Mot de passe par défaut : <code style={{ background: '#F1F5F9', padding: '0.2rem 0.5rem', borderRadius: '4px', color: '#334155', fontWeight: 600 }}>BrightAfrica2026</code>
-        </p>
       </div>
     </div>
   );
