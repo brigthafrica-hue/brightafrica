@@ -1,0 +1,164 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About Us",
+    "pillars": "Our Pillars",
+    "projects": "Projects & Impact",
+    "safeguarding": "Safeguarding",
+    "act": "Get Involved",
+    "news": "News",
+    "contact": "Contact",
+    "donate": "Donate",
+    "language": "FR"
+  },
+  "projects": {
+    "title": "Our Projects",
+    "subtitle": "Discover our actions on the ground and the impact we create together in North Kivu. Each project we deploy is designed to meet the vital and urgent needs of communities while building solid foundations for an autonomous, peaceful, and sustainable future.",
+    "view_details": "View details",
+    "back_to_projects": "Back to projects",
+    "back_to_all_projects": "Back to all projects",
+    "about_project": "About the project",
+    "photo_gallery": "Photo gallery",
+    "contact_us_about": "Contact us about this project",
+    "annual_reports": "Annual Reports",
+    "reports_subtitle": "Transparency is at the heart of our governance. Consult our activity and financial reports.",
+    "no_projects": "No projects at the moment.",
+    "report_pdf": "Report"
+  },
+  "hero": {
+    "badge": "Child Protection NGO • Goma, North Kivu, DRC",
+    "title1": "Protecting the future",
+    "title2": "of Africa's children",
+    "subtitle": "We work for the protection, education, health and environment of children in North Kivu. Join our movement for a brighter future.",
+    "cta_donate": "Donate Now",
+    "cta_join": "Join the NGO",
+    "cta_report": "Urgent Report"
+  },
+  "impact": {
+    "title": "Our Impact in Numbers",
+    "subtitle": "Concrete results on the ground, in the heart of North Kivu",
+    "children": "Children supported",
+    "schools": "Schools supported",
+    "trees": "Trees planted",
+    "sessions": "Awareness sessions"
+  },
+  "pillars": {
+    "title": "Our Pillars of Intervention",
+    "subtitle": "An integrated approach for the well-being of children and their communities",
+    "protection": {
+      "title": "Child Protection",
+      "desc": "Fighting violence, exploitation and child recruitment. Psychosocial and legal support."
+    },
+    "health": {
+      "title": "Maternal & Child Health",
+      "desc": "Hygiene awareness, health prevention and promotion of mother and child health."
+    },
+    "education": {
+      "title": "Education & Training",
+      "desc": "Literacy, vocational training and school support, especially for young girls."
+    },
+    "environment": {
+      "title": "Environmental Protection",
+      "desc": "Reforestation, ecosystem preservation and climate change awareness."
+    },
+    "learn_more": "Learn more"
+  },
+  "news": {
+    "title": "Latest News",
+    "subtitle": "Stay informed about our actions on the ground",
+    "read_more": "Read more",
+    "all_news": "All news"
+  },
+  "partners": {
+    "title": "Our Partners",
+    "subtitle": "They trust us and support our mission"
+  },
+  "cta": {
+    "title": "Together, let's build a brighter future",
+    "subtitle": "Every action counts. Join Bright Africa and help protect the children of North Kivu.",
+    "donate": "Donate Now",
+    "join": "Become a Member"
+  },
+  "about": {
+    "title": "Who are we?",
+    "subtitle": "Discover the history, vision and governance of Bright Africa",
+    "history_title": "Legal Context",
+    "history_text": "The NGO BRIGHT AFRICA (BA) is a Non-Governmental Organization and Non-Profit Association, founded in accordance with Law No. 004/2001 of July 20, 2001 relating to NPOs in the Democratic Republic of Congo.",
+    "vision_title": "Our Vision",
+    "vision_text": "To create a protective, healthy and educational environment, ensuring the well-being, safety and harmonious development of children in Africa.",
+    "mission_title": "Our Mission",
+    "mission_text": "To promote, protect and defend children's rights by ensuring their access to education, health, protection and a safe environment.",
+    "governance_title": "Governance Bodies",
+    "ag": "General Assembly",
+    "ag_desc": "Supreme body for guidance, decision-making and validation of the NGO's strategic orientations.",
+    "ca": "Board of Directors",
+    "ca_desc": "Supervisory body responsible for control, strategic guidance and program execution oversight.",
+    "bureau": "Executive Committee",
+    "bureau_desc": "Coordination body in charge of daily monitoring and operational implementation of decisions.",
+    "direction": "Executive Management",
+    "direction_desc": "Administrative and technical management body driving effective project delivery on the ground.",
+    "docs_title": "Official Documents",
+    "download_statuts": "Download Statutes",
+    "download_roi": "Download Internal Rules"
+  },
+  "safeguarding": {
+    "title": "Safeguarding Space",
+    "subtitle": "Protection and reporting of child rights violations",
+    "charter_title": "Child Protection Charter",
+    "charter_text": "Bright Africa is committed to maintaining the highest standards of child protection in accordance with Article 22 of its statutes.",
+    "referent_title": "Protection Officer",
+    "referent_text": "A Protection Officer appointed by the Board of Directors is responsible for receiving and processing all reports.",
+    "form_title": "Confidential Reporting Form",
+    "form_subtitle": "Report any case of child rights violation in full confidentiality. Anonymity is guaranteed.",
+    "form_type": "Type of incident",
+    "form_desc": "Detailed description",
+    "form_location": "Location of incident",
+    "form_date": "Approximate date",
+    "form_anonymous": "Submit anonymously",
+    "form_name": "Your name (optional)",
+    "form_contact": "Your contact (optional)",
+    "form_submit": "Send report",
+    "form_disclaimer": "This report will be transmitted confidentially and encrypted to the Protection Officer and the President of the NGO."
+  },
+  "act": {
+    "title": "Get Involved",
+    "subtitle": "Multiple ways to support our mission",
+    "donate_title": "Make a Donation",
+    "donate_subtitle": "Financially contribute to child protection",
+    "member_title": "Become a Member",
+    "member_subtitle": "Join our engaged community",
+    "volunteer_title": "Volunteering & Recruitment",
+    "volunteer_subtitle": "Put your skills at the service of children",
+    "amount": "Amount",
+    "currency": "Currency",
+    "frequency": "Frequency",
+    "one_time": "One-time donation",
+    "monthly": "Monthly donation",
+    "payment_method": "Payment method",
+    "submit_donation": "Confirm donation"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "We are here to listen",
+    "address_title": "Headquarters",
+    "address": "Avenue de la Paix, Himbi Quarter, Goma Municipality, City of Goma, North Kivu Province, DRC",
+    "form_name": "Full name",
+    "form_email": "Email address",
+    "form_subject": "Subject",
+    "form_message": "Your message",
+    "form_send": "Send message"
+  },
+  "footer": {
+    "description": "NGO for the protection and promotion of children's rights in the Democratic Republic of Congo.",
+    "quick_links": "Quick Links",
+    "legal": "Legal Information",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use",
+    "statuts": "NGO Statutes",
+    "newsletter_title": "Newsletter",
+    "newsletter_subtitle": "Receive our latest news",
+    "newsletter_placeholder": "Your email address",
+    "newsletter_submit": "Subscribe",
+    "rights": "All rights reserved."
+  }
+}

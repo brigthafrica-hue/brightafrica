@@ -1,0 +1,164 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "about": "À Propos",
+    "pillars": "Nos Piliers",
+    "projects": "Projets & Impact",
+    "safeguarding": "Safeguarding",
+    "act": "Agir avec Nous",
+    "news": "Actualités",
+    "contact": "Contact",
+    "donate": "Faire un Don",
+    "language": "EN"
+  },
+  "projects": {
+    "title": "Nos Projets",
+    "subtitle": "Découvrez nos actions sur le terrain et l'impact que nous créons ensemble à travers le continent africain. Chaque projet que nous déployons est pensé pour répondre aux besoins vitaux et urgents des communautés, tout en bâtissant des fondations solides pour un avenir autonome, pacifique et durable.",
+    "view_details": "Voir les détails",
+    "back_to_projects": "Retour aux projets",
+    "back_to_all_projects": "Retour à tous les projets",
+    "about_project": "À propos du projet",
+    "photo_gallery": "Galerie photos",
+    "contact_us_about": "Nous contacter à propos de ce projet",
+    "annual_reports": "Rapports Annuels",
+    "reports_subtitle": "La transparence est au cœur de notre gouvernance. Consultez nos rapports d'activités et financiers.",
+    "no_projects": "Aucun projet pour l'instant.",
+    "report_pdf": "Rapport"
+  },
+  "hero": {
+    "badge": "ONG Panafricaine de Protection de l'Enfant",
+    "title1": "Protéger l'avenir",
+    "title2": "des enfants d'Afrique",
+    "subtitle": "Nous œuvrons pour la protection, l'éducation, la santé et l'environnement des enfants en Afrique. Rejoignez notre mouvement pour un avenir meilleur.",
+    "cta_donate": "Faire un Don",
+    "cta_join": "Rejoindre l'ONG",
+    "cta_report": "Signalement Urgent"
+  },
+  "impact": {
+    "title": "Notre Impact en Chiffres",
+    "subtitle": "Des résultats concrets et mesurables sur le terrain, portés par nos équipes engagées à travers l'Afrique. Chaque chiffre représente une vie transformée, une communauté renforcée et un pas de plus vers un avenir durable pour les enfants, les femmes et les populations vulnérables du continent africain.",
+    "children": "Enfants accompagnés",
+    "schools": "Écoles soutenues",
+    "trees": "Arbres plantés",
+    "sessions": "Sensibilisations"
+  },
+  "pillars": {
+    "title": "Nos Piliers d'Intervention",
+    "subtitle": "Conformément à l'Article 9 de nos statuts, BRIGHT AFRICA déploie ses actions à travers quatre domaines d'intervention stratégiques et complémentaires, conçus pour répondre de manière holistique aux défis les plus urgents auxquels font face les communautés vulnérables à travers le continent africain. Chaque pilier constitue un axe fondamental de notre engagement et reflète notre vision d'un développement durable, inclusif et centré sur la dignité humaine. De la protection de l'enfance à la promotion de la santé maternelle et infantile, en passant par l'éducation environnementale et la consolidation de la paix, nos interventions visent à créer un impact profond et durable dans chaque communauté que nous accompagnons. Grâce à une approche participative et à des partenariats solides avec les acteurs locaux, les institutions gouvernementales et les organisations internationales, BRIGHT AFRICA s'efforce de bâtir des sociétés plus justes, plus résilientes et plus solidaires pour les générations présentes et futures.",
+    "protection": {
+      "title": "Protection de l'Enfant",
+      "desc": "Lutte contre les violences, l'exploitation, le travail des enfants, le mariage précoce et le recrutement armé. Accompagnement psychosocial, juridique et alertes aux autorités compétentes (Parquet, Affaires Sociales)."
+    },
+    "health": {
+      "title": "Santé Maternelle & Infantile",
+      "desc": "Promotion de la santé de la mère et de l'enfant, organisation de campagnes de sensibilisation à l'hygiène, à l'assainissement et à la prévention sanitaire au sein des communautés."
+    },
+    "education": {
+      "title": "Éducation & Formation",
+      "desc": "Soutien à la scolarisation des enfants et des jeunes filles vulnérables, programmes d'alphabétisation et formations professionnelles pour l'autonomisation des jeunes."
+    },
+    "environment": {
+      "title": "Protection de l'Environnement",
+      "desc": "Actions de reboisement, préservation des écosystèmes, lutte contre la déforestation, sensibilisation au changement climatique et gestion durable du cadre de vie."
+    },
+    "learn_more": "En savoir plus"
+  },
+  "news": {
+    "title": "Dernières Actualités",
+    "subtitle": "Restez informés de nos actions sur le terrain à travers le continent africain. Nos actualités vous plongent au cœur de nos interventions quotidiennes, des témoignages des communautés que nous accompagnons et des avancées significatives réalisées dans les domaines de la protection de l'enfance, de la santé maternelle, de l'éducation environnementale et de la consolidation de la paix.",
+    "read_more": "Lire la suite",
+    "all_news": "Toutes les actualités"
+  },
+  "partners": {
+    "title": "Nos Partenaires",
+    "subtitle": "Ils nous font confiance et soutiennent notre mission"
+  },
+  "cta": {
+    "title": "Ensemble, construisons un avenir meilleur pour les enfants",
+    "subtitle": "Chaque geste compte. Rejoignez Bright Africa et contribuez à protéger les droits de l'enfant en Afrique.",
+    "donate": "Faire un Don",
+    "join": "Devenir Membre"
+  },
+  "about": {
+    "title": "Qui sommes-nous ?",
+    "subtitle": "Découvrez le cadre légal, la vision, la mission et la gouvernance statutaire de l'ONG Bright Africa, engagée à travers tout le continent africain pour offrir un avenir meilleur aux enfants et bâtir des communautés résilientes.",
+    "history_title": "Cadre Légal & Identité",
+    "history_text": "Créée le 1er Janvier 2026 à Goma, BRIGHT AFRICA (BA en sigle) est une Organisation Non Gouvernementale (ONG) et Association Sans But Lucratif (ASBL) régie conformément à la loi n° 004/2001 du 20 juillet 2001 relative aux ASBL en République Démocratique du Congo. Son siège social est établi à Goma (Avenue de la Paix, Quartier Himbi) et son rayon d'action s'étend à travers tout le continent africain.",
+    "vision_title": "Notre Vision",
+    "vision_text": "La vision de BRIGHT AFRICA est de créer un environnement protecteur, sain et éducatif, garantissant le bien-être, la sécurité et le développement harmonieux de l'enfant.",
+    "mission_title": "Notre Mission",
+    "mission_text": "La mission principale de BRIGHT AFRICA est de promouvoir, protéger et défendre les droits des enfants en leur assurant un accès à l'éducation, à la santé, à la protection et à un environnement sûr, afin qu'ils puissent s'épanouir et contribuer au développement de l'Afrique.",
+    "governance_title": "Organes Dirigeants",
+    "ag": "Assemblée Générale (AGO / AGE)",
+    "ag_desc": "Organe souverain de l'ONG, composé des membres fondateurs et adhérents. Elle définit la politique globale, adopte les statuts et élit les administrateurs.",
+    "ca": "Conseil d'Administration",
+    "ca_desc": "Organe d'administration et d'orientation composé de 5 à 9 membres élus pour un mandat de 3 ans. Il supervise la mise en œuvre des actions et la gestion.",
+    "bureau": "Coordination",
+    "bureau_desc": "Organe exécutif d'orientation stratégique et de coordination des programmes sur le terrain conformément aux directives du Conseil d'Administration.",
+    "direction": "Direction Générale",
+    "direction_desc": "Organe de conduite opérationnelle, administrative, financière et technique quotidienne des projets de l'ONG.",
+    "docs_title": "Documents Officiels",
+    "download_statuts": "Télécharger les Statuts (PDF)",
+    "download_roi": "Télécharger le ROI"
+  },
+  "safeguarding": {
+    "title": "Espace Safeguarding & Sauvegarde",
+    "subtitle": "Politique renforcée de protection de l'enfant",
+    "charter_title": "Charte de Protection de l'Enfant",
+    "charter_text": "Conformément à nos Statuts, BRIGHT AFRICA applique une politique stricte de sauvegarde des enfants. Toute personne intervenant auprès des enfants s'engage à signer et respecter le code de conduite, à fournir un extrait de casier judiciaire vierge (bulletin n°3) et à suivre les formations internes.",
+    "referent_title": "Référent Protection",
+    "referent_text": "Le Conseil d'Administration désigne en son sein un Référent Protection chargé de veiller à l'application de la politique de sauvegarde, de recevoir et traiter les signalements et d'assurer le suivi des actions correctives.",
+    "form_title": "Formulaire de Signalement Confidentiel",
+    "form_subtitle": "Conformément au devoir de signalement statutaire, signalez en toute confidentialité toute suspicion ou acte de maltraitance, d'abus, d'exploitation ou de violence faite à un enfant.",
+    "form_type": "Type d'incident",
+    "form_desc": "Description détaillée des faits",
+    "form_location": "Lieu de l'incident (Ville, Quartier, École...)",
+    "form_date": "Date approximative",
+    "form_anonymous": "Soumettre anonymement",
+    "form_name": "Votre nom (optionnel)",
+    "form_contact": "Votre contact (optionnel)",
+    "form_submit": "Envoyer le signalement",
+    "form_disclaimer": "Ce signalement est transmis en toute confidentialité au Référent Protection et à la Présidence. Aucun membre ne peut subir de sanction pour un signalement fait de bonne foi."
+  },
+  "act": {
+    "title": "Agir avec Nous",
+    "subtitle": "Plusieurs façons de soutenir notre mission",
+    "donate_title": "Faire un Don",
+    "donate_subtitle": "Soutenez le financement de nos actions sur le terrain en Afrique",
+    "member_title": "Devenir Membre",
+    "member_subtitle": "Rejoignez notre communauté d'adhérents",
+    "volunteer_title": "Bénévolat & Engagement",
+    "volunteer_subtitle": "Mettez vos compétences au service de la protection de l'enfant",
+    "amount": "Montant",
+    "currency": "Devise",
+    "frequency": "Fréquence",
+    "one_time": "Don ponctuel",
+    "monthly": "Don mensuel",
+    "payment_method": "Moyen de paiement",
+    "submit_donation": "Confirmer le don"
+  },
+  "contact": {
+    "title": "Contactez-nous",
+    "subtitle": "Notre équipe permanente est à votre écoute au siège social de Goma",
+    "address_title": "Siège Social",
+    "address": "Avenue de la Paix, Quartier Himbi, Commune de Goma, Ville de Goma, Province du Nord-Kivu, RDC",
+    "form_name": "Nom complet",
+    "form_email": "Adresse email",
+    "form_subject": "Sujet",
+    "form_message": "Votre message",
+    "form_send": "Envoyer le message"
+  },
+  "footer": {
+    "description": "ONG de protection et promotion des droits de l'enfant en Afrique.",
+    "quick_links": "Liens Rapides",
+    "legal": "Informations Légales",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d'utilisation",
+    "statuts": "Statuts de l'ONG",
+    "newsletter_title": "Newsletter",
+    "newsletter_subtitle": "Recevez nos dernières nouvelles",
+    "newsletter_placeholder": "Votre adresse email",
+    "newsletter_submit": "S'abonner",
+    "rights": "Tous droits réservés."
+  }
+}
