@@ -52,5 +52,5 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`[Server] Bright Africa API running on port ${PORT}`);
+  console.log(`[Server] Bright African API running on port ${PORT}`);
 });

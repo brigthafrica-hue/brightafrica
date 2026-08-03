@@ -1,4 +1,4 @@
-/* ===== BRIGHT AFRICA — Shared Types ===== */
+/* ===== BRIGHT AFRICAN — Shared Types ===== */
 
 export interface ImpactCounter {
   id: string;

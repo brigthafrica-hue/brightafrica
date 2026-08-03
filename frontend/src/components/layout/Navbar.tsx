@@ -29,7 +29,7 @@ export default function Navbar() {
         <Link to="/" className="flex items-center gap-3 group">
           <img
             src="/logo.png"
-            alt="Bright Africa"
+            alt="Bright African"
             className="h-10 w-auto transition-transform duration-300 group-hover:scale-105"
           />
           <div className="hidden sm:block">

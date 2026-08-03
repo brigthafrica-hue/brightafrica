@@ -173,7 +173,7 @@ export default function AdminDashboard() {
         <div className="admin-sidebar-header">
           <img src="/logo.png" alt="BA" className="admin-sidebar-logo" />
           <div>
-            <div className="admin-sidebar-title">Bright Africa</div>
+            <div className="admin-sidebar-title">Bright African</div>
             <div className="admin-sidebar-subtitle">Panel Admin</div>
           </div>
         </div>

@@ -1,15 +1,15 @@
 # CAHIER DES CHARGES FONCTIONNEL ET TECHNIQUE
 ## Conception et Développement du Site Web Officiel et de la Plateforme Numérique
-### ONG « BRIGHT AFRICA » (BA)
+### ONG « BRIGHT AFRICAN » (BA)
 
 ---
 
 ## 1. CONTEXTE ET PRÉSENTATION DE L'ORGANISATION
 
 ### 1.1 Contexte Général
-L'ONG **« BRIGHT AFRICA » (BA en sigle)** est une Organisation Non Gouvernementale et Association Sans But Lucratif (ASBL), fondée conformément à la loi n° 004/2001 du 20 juillet 2001 relative aux ASBL en République Démocratique du Congo (RDC).
+L'ONG **« BRIGHT AFRICAN » (BA en sigle)** est une Organisation Non Gouvernementale et Association Sans But Lucratif (ASBL), fondée conformément à la loi n° 004/2001 du 20 juillet 2001 relative aux ASBL en République Démocratique du Congo (RDC).
 
-- **Dénomination officielle** : ONG BRIGHT AFRICA (« BA »)
+- **Dénomination officielle** : ONG BRIGHT AFRICAN (« BA »)
 - **Siège Social** : Avenue de la Paix, Quartier Himbi, Commune de Goma, Ville de Goma, Province du Nord-Kivu, République Démocratique du Congo.
 - **Rayon d'action** : Province du Nord-Kivu, avec possibilité d'extension sur toute l'étendue de la RDC et à l'international.
 - **Exercice social** : 1er Janvier – 31 Décembre (Langue officielle de travail : Français).
@@ -29,7 +29,7 @@ L'ONG **« BRIGHT AFRICA » (BA en sigle)** est une Organisation Non Gouvernemen
 
 ## 2. OBJECTIFS DU PROJET NUMÉRIQUE
 
-Le projet vise à concevoir, développer et déployer le site web officiel et la plateforme numérique de l'ONG Bright Africa.
+Le projet vise à concevoir, développer et déployer le site web officiel et la plateforme numérique de l'ONG Bright African.
 
 ### 2.1 Objectifs Stratégiques
 1. **Visibilité & Notoriété Internationale et Locale** : Présenter l'ONG, sa vision, ses actions au Nord-Kivu et ses partenariats auprès du grand public, des bailleurs de fonds et des institutions.
@@ -78,7 +78,7 @@ Le projet vise à concevoir, développer et déployer le site web officiel et la
 ## 4. DESCRIPTION DÉTAILLÉE DES MODULES ET FONCTIONNALITÉS
 
 ### 4.1 Page d'Accueil (Home Page)
-- **Hero Section Dynamique** : Visuels percutants, slogan de Bright Africa, boutons d'action rapides (« *Faire un don* », « *Rejoindre l'ONG* », « *Signalement Urgent* »).
+- **Hero Section Dynamique** : Visuels percutants, slogan de Bright African, boutons d'action rapides (« *Faire un don* », « *Rejoindre l'ONG* », « *Signalement Urgent* »).
 - **Compteur d'Impact en Temps Réel** : Chiffres clés (Enfants accompagnés, Écoles soutenues, Arbres plantés, Sensibilisations effectuées).
 - **Présentation des 4 Piliers** : Cartes interactives détaillant chaque domaine d'intervention.
 - **Section Actualités Récentes & Alertes** : Derniers communiqués de presse et articles de terrain.
@@ -157,11 +157,11 @@ Le projet vise à concevoir, développer et déployer le site web officiel et la
 ## 7. CRITÈRES DE VALIDATION ET RECETTE
 
 Le projet sera considéré comme validé après vérification des critères suivants :
-1. ✅ Conformité à 100% avec les **Statuts de l'ONG Bright Africa** (Gouvernance, Vision, 4 Piliers).
+1. ✅ Conformité à 100% avec les **Statuts de l'ONG Bright African** (Gouvernance, Vision, 4 Piliers).
 2. ✅ Bon fonctionnement du **Module de Signalement Safeguarding** (Art. 22) et routage vers le Référent Protection.
 3. ✅ Intégration fonctionnelle du **Module de Don** (Mobile Money + Carte).
 4. ✅ Chargement rapide et parfait affichage sur mobile en zone à faible débit internet.
-5. ✅ Formation de l'équipe administrative de Bright Africa à la mise à jour des contenus.
+5. ✅ Formation de l'équipe administrative de Bright African à la mise à jour des contenus.
 
 ---
-*Document établi pour l'ONG Bright Africa — Ville de Goma, Nord-Kivu, RDC.*
+*Document établi pour l'ONG Bright African — Ville de Goma, Nord-Kivu, RDC.*

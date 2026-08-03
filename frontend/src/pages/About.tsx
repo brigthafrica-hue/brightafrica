@@ -76,7 +76,7 @@ export default function About() {
               <div className="glass-card p-6 relative rounded-3xl border-2 border-white/10 shadow-xl overflow-hidden aspect-square flex items-center justify-center bg-white/80 dark:bg-ba-dark-light/80 backdrop-blur-md">
                 <img 
                   src="/logo.png" 
-                  alt="Bright Africa Logo" 
+                  alt="Bright African Logo" 
                   className="w-full h-full object-contain p-4 hover:scale-105 transition-transform duration-500" 
                 />
               </div>

@@ -89,7 +89,7 @@ export default function ActWithUs() {
     if (res.success) {
       setStatusMsg({
         type: 'success',
-        text: 'Votre demande d\'adhésion à l\'ONG Bright Africa a été soumise ! Notre bureau examinera votre dossier.',
+        text: 'Votre demande d\'adhésion à l\'ONG Bright African a été soumise ! Notre bureau examinera votre dossier.',
       });
       setMembershipData({
         fullName: '',
@@ -115,7 +115,7 @@ export default function ActWithUs() {
       >
         <h1 className="font-heading text-4xl md:text-5xl font-bold mb-6 text-center">{t.act.title}</h1>
         <p className="text-ba-text-secondary text-lg text-center max-w-3xl mx-auto leading-relaxed">
-          {t.act.subtitle}. Que ce soit par un don ponctuel ou en devenant membre actif de l'ONG Bright Africa, votre engagement apporte un soutien concret aux enfants.
+          {t.act.subtitle}. Que ce soit par un don ponctuel ou en devenant membre actif de l'ONG Bright African, votre engagement apporte un soutien concret aux enfants.
         </p>
 
         {/* Tabs switcher */}
@@ -308,7 +308,7 @@ export default function ActWithUs() {
                     </div>
                     <div>
                        <h2 className="font-heading text-2xl font-bold">Demande d'Adhésion (Membre)</h2>
-                       <p className="text-ba-text-secondary">Rejoignez l'ONG Bright Africa en tant que membre adhérent ou sympathisant.</p>
+                       <p className="text-ba-text-secondary">Rejoignez l'ONG Bright African en tant que membre adhérent ou sympathisant.</p>
                     </div>
                   </div>
 
@@ -361,7 +361,7 @@ export default function ActWithUs() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-2">Motivation à rejoindre l'ONG Bright Africa</label>
+                      <label className="block text-sm font-medium mb-2">Motivation à rejoindre l'ONG Bright African</label>
                       <textarea
                         rows={4}
                         placeholder="Expliquez brièvement les raisons de votre demande..."
@@ -388,12 +388,12 @@ export default function ActWithUs() {
           <div className="lg:col-span-5 flex flex-col justify-center items-center p-6 space-y-6">
              <img 
                src="/logo.png" 
-               alt="Bright Africa Logo" 
+               alt="Bright African Logo" 
                className="w-full max-w-sm md:max-w-md h-auto object-contain" 
              />
              <div className="glass-card p-6 border-l-4 border-ba-green text-sm text-ba-text-secondary space-y-2">
                <div className="font-bold text-ba-green">Engagement éthique & Transparence</div>
-               <p>Conformément aux statuts de l'ONG Bright Africa (Art. 17 & 22), chaque membre s'engage à respecter les principes de protection des enfants et la gouvernance sociale.</p>
+               <p>Conformément aux statuts de l'ONG Bright African (Art. 17 & 22), chaque membre s'engage à respecter les principes de protection des enfants et la gouvernance sociale.</p>
              </div>
           </div>
 

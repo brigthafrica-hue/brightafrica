@@ -35,10 +35,10 @@ export default function AdminLogin() {
         {/* Logo - Centered */}
         <div className="text-center mb-8 flex flex-col items-center justify-center">
           <div className="w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden shadow-md bg-white p-2 border border-gray-100 flex items-center justify-center">
-            <img src="/logo.png" alt="Bright Africa" className="w-full h-full object-contain" />
+            <img src="/logo.png" alt="Bright African" className="w-full h-full object-contain" />
           </div>
           <h1 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '1.6rem', fontWeight: 700, color: '#0F172A', marginBottom: '0.25rem' }}>
-            Bright Africa
+            Bright African
           </h1>
           <p style={{ fontSize: '0.875rem', color: '#64748B', fontWeight: 500 }}>
             Panneau d'administration

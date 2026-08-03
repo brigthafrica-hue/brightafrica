@@ -21,7 +21,7 @@ export default function ContactManager() {
     <div>
       <div style={{ marginBottom: '1.5rem' }}>
         <p style={{ color: '#E5E7EB', fontSize: '0.875rem' }}>
-          Modifiez les informations de contact officielles de l'ONG Bright Africa.
+          Modifiez les informations de contact officielles de l'ONG Bright African.
         </p>
       </div>
 

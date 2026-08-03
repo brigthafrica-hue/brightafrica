@@ -57,7 +57,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1 space-y-6">
             <Link to="/" className="flex items-center gap-3">
-              <img src="/logo.png" alt="Bright Africa" className="h-14 w-auto brightness-110" />
+              <img src="/logo.png" alt="Bright African" className="h-14 w-auto brightness-110" />
               <div>
                 <span className="font-heading font-bold text-2xl">
                   <span className="text-ba-red">Bright</span>{' '}
@@ -163,7 +163,7 @@ export default function Footer() {
       <div className="border-t border-white/10 bg-black/30">
         <div className="container-ba py-10 md:py-12 flex flex-col md:flex-row items-center justify-between gap-6">
           <p className="text-gray-300 text-sm leading-relaxed">
-            © {new Date().getFullYear()} ONG Bright Africa. {t.footer.rights}
+            © {new Date().getFullYear()} ONG Bright African. {t.footer.rights}
           </p>
           <p className="text-gray-400 text-sm leading-relaxed text-center md:text-right">
             Avenue de la Paix, Quartier Himbi, Goma — Nord-Kivu, RDC
