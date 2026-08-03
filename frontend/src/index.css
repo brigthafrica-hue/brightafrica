@@ -367,3 +367,86 @@ h1, h2, h3, h4, h5, h6 {
     margin-top: 85px !important;
   }
 }
+
+/* ===== Form Inputs — Fond Blanc & Texte Noir (visible partout) ===== */
+/* Règle globale : tous les champs de formulaire ont fond blanc + texte noir */
+input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="reset"]),
+textarea,
+select {
+  background-color: #FFFFFF;
+  color: #111827;
+  -webkit-text-fill-color: #111827;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="reset"])::placeholder,
+textarea::placeholder {
+  color: #9CA3AF;
+  -webkit-text-fill-color: #9CA3AF;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="reset"]):focus,
+textarea:focus,
+select:focus {
+  background-color: #FFFFFF;
+  color: #111827;
+  -webkit-text-fill-color: #111827;
+}
+
+/* Champs désactivés */
+input:disabled,
+textarea:disabled,
+select:disabled {
+  background-color: #F3F4F6;
+  color: #6B7280;
+  -webkit-text-fill-color: #6B7280;
+  cursor: not-allowed;
+}
+
+/* Options des <select> — fond blanc, texte noir */
+select option {
+  background-color: #FFFFFF;
+  color: #111827;
+}
+
+/* ===== Surcharge pour l'interface Admin (thème sombre) ===== */
+/* Les champs admin conservent leur style sombre */
+.admin-layout input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="reset"]),
+.admin-layout textarea,
+.admin-layout select {
+  background-color: #1F2937;
+  color: #FFFFFF;
+  -webkit-text-fill-color: #FFFFFF;
+}
+
+.admin-layout input::placeholder,
+.admin-layout textarea::placeholder {
+  color: #9CA3AF;
+  -webkit-text-fill-color: #9CA3AF;
+}
+
+.admin-layout input:focus,
+.admin-layout textarea:focus,
+.admin-layout select:focus {
+  background-color: #1F2937;
+  color: #FFFFFF;
+  -webkit-text-fill-color: #FFFFFF;
+}
+
+.admin-layout select option {
+  background-color: #1F2937;
+  color: #FFFFFF;
+}
+
+/* Champ login admin (fond clair) */
+.admin-login-card input {
+  background-color: #F9FAFB;
+  color: #111827;
+  -webkit-text-fill-color: #111827;
+}
+
+.admin-login-card input:focus {
+  background-color: #FFFFFF;
+  color: #111827;
+  -webkit-text-fill-color: #111827;
+}
+
