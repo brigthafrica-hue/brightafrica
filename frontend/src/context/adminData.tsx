@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
 import type { AdminData, ImpactCounter, Pillar, NewsArticle, Project, ContactInfo, AdminUser, Subscriber, NewsletterLog } from '../types';
 import { apiFetch } from '../services/api';
 
@@ -173,15 +173,13 @@ const DEFAULT_DATA: AdminData = {
 
 const STORAGE_KEY = 'ba-admin-data';
 
-function loadData(): AdminData {
+// Read from localStorage cache (used as fallback while cloud loads)
+function loadCachedData(): AdminData {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored) as AdminData;
-      return {
-        ...parsed,
-        users: parsed.users || [],
-      };
+      return { ...parsed, users: parsed.users || [] };
     }
   } catch {
     // Ignore parse errors
@@ -189,17 +187,21 @@ function loadData(): AdminData {
   return DEFAULT_DATA;
 }
 
-function saveData(data: AdminData) {
+// Write to localStorage cache (offline fallback)
+function cacheData(data: AdminData) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   } catch (err) {
-    console.warn('LocalStorage save warning (Quota exceeded or storage disabled):', err);
+    console.warn('LocalStorage cache warning:', err);
   }
 }
 
 /* ===== Context ===== */
 interface AdminDataContextType {
   data: AdminData;
+  isSyncing: boolean;       // true while saving to MongoDB Atlas
+  syncError: string | null; // last sync error message
+  isCloudLoaded: boolean;   // true once data fetched from cloud
   // Impact
   updateImpact: (id: string, item: Partial<ImpactCounter>) => void;
   addImpact: (item: Omit<ImpactCounter, 'id'>) => void;
@@ -244,7 +246,12 @@ function generateId(): string {
 }
 
 export function AdminDataProvider({ children }: { children: ReactNode }) {
-  const [data, setData] = useState<AdminData>(loadData);
+  // Start from cached localStorage data for instant render; cloud data will replace this
+  const [data, setData] = useState<AdminData>(loadCachedData);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const [isCloudLoaded, setIsCloudLoaded] = useState(false);
+
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     return sessionStorage.getItem('ba-admin-auth') === 'true';
   });
@@ -253,9 +260,66 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
     return stored ? JSON.parse(stored) : null;
   });
 
-  const persist = useCallback((newData: AdminData) => {
+  // ── On mount: load live data from MongoDB Atlas ──────────────────────────
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchCloudData() {
+      try {
+        const res = await apiFetch<AdminData>('/content');
+        if (!cancelled && res.success && res.data) {
+          const cloudData: AdminData = {
+            ...res.data,
+            users: res.data.users || [],
+          };
+          setData(cloudData);
+          cacheData(cloudData); // update local cache with cloud data
+          setIsCloudLoaded(true);
+          setSyncError(null);
+          console.log('[BrightAfrican] ✅ Site content loaded from MongoDB Atlas');
+        }
+      } catch (err) {
+        if (!cancelled) {
+          console.warn('[BrightAfrican] ⚠️ Could not reach backend, using cached data:', err);
+          setSyncError('Hors ligne — données locales utilisées.');
+          setIsCloudLoaded(false);
+        }
+      }
+    }
+    fetchCloudData();
+    return () => { cancelled = true; };
+  }, []);
+
+  // ── persist: save to MongoDB Atlas + update localStorage cache ───────────
+  const persist = useCallback(async (newData: AdminData) => {
     setData(newData);
-    saveData(newData);
+    cacheData(newData); // immediate local cache
+    setIsSyncing(true);
+    setSyncError(null);
+    try {
+      const res = await apiFetch('/content', {
+        method: 'PUT',
+        body: JSON.stringify({
+          impact: newData.impact,
+          pillars: newData.pillars,
+          news: newData.news,
+          projects: newData.projects,
+          contact: newData.contact,
+          users: newData.users || [],
+        }),
+      });
+      if (!res.success) {
+        console.warn('[BrightAfrican] Cloud sync warning:', res.error);
+        setSyncError('Sauvegarde cloud échouée. Données conservées localement.');
+      } else {
+        setSyncError(null);
+        console.log('[BrightAfrican] ✅ Données synchronisées vers MongoDB Atlas');
+      }
+    } catch (err) {
+      console.warn('[BrightAfrican] Cloud sync error (offline?):', err);
+      setSyncError('Hors ligne — modification sauvegardée localement uniquement.');
+    } finally {
+      setIsSyncing(false);
+    }
   }, []);
 
   // Auth (Async with Backend API check + local fallback)
@@ -556,6 +620,7 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
     <AdminDataContext.Provider
       value={{
         data,
+        isSyncing, syncError, isCloudLoaded,
         updateImpact, addImpact, deleteImpact,
         updatePillar, addPillar, deletePillar,
         updateNews, addNews, deleteNews,

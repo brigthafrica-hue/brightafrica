@@ -13,6 +13,7 @@ import donationRoutes from './routes/donations';
 import membershipRoutes from './routes/membership';
 import newsletterRoutes from './routes/newsletter';
 import authRoutes from './routes/auth';
+import contentRoutes from './routes/content';
 
 dotenv.config();
 
@@ -39,6 +40,7 @@ app.use('/api/v1/safeguarding', safeguardingRoutes);
 app.use('/api/v1/donations', donationRoutes);
 app.use('/api/v1/membership', membershipRoutes);
 app.use('/api/v1/newsletter', newsletterRoutes);
+app.use('/api/v1/content', contentRoutes);
 
 // Health Check
 app.get('/health', (req, res) => {
