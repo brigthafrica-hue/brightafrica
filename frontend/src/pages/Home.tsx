@@ -419,7 +419,7 @@ function NewsPreviewSection() {
   const articles = data.news.slice(0, 3);
 
   return (
-    <section className="section-padding bg-ba-surface-elevated dark:bg-ba-dark-light">
+    <section className="section-padding">
       <div ref={ref} className={`container-ba transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-8 gap-4">
           <div>
