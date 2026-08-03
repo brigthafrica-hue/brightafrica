@@ -121,7 +121,7 @@ export default function Safeguarding() {
                     Signalement Transmis en Toute Confidentialité
                   </div>
                   <p className="text-sm text-emerald-800 dark:text-emerald-200">
-                    Votre signalement a été chiffré et envoyé au Référent Protection de l'ONG Bright Africann. Votre démarche contribue directement à la sécurité et à la protection des enfants.
+                    Votre signalement a été chiffré et envoyé au Référent Protection de l'ONG Bright African. Votre démarche contribue directement à la sécurité et à la protection des enfants.
                   </p>
                   <div className="p-4 bg-emerald-100 dark:bg-emerald-900/60 rounded-xl flex items-center justify-between border border-emerald-300 dark:border-emerald-700">
                     <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-200 uppercase tracking-wider">Numéro de suivi confidentiel :</span>

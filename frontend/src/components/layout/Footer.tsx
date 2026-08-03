@@ -59,9 +59,9 @@ export default function Footer() {
             <Link to="/" className="flex items-center gap-3">
               <img src="/logo.png" alt="Bright African" className="h-14 w-auto brightness-110" />
               <div>
-                <span className="font-heading font-bold text-2xl">
+                <span className="font-heading font-bold text-xl leading-none text-white block">
                   <span className="text-ba-red">Bright</span>{' '}
-                  <span className="text-ba-green">Africa</span>
+                  <span className="text-ba-green">African</span>
                 </span>
               </div>
             </Link>
