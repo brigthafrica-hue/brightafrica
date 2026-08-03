@@ -368,14 +368,16 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-/* ===== Form Inputs — Fond Blanc & Texte Noir (visible partout) ===== */
-/* Règle globale : tous les champs de formulaire ont fond blanc + texte noir */
+/* ===== Form Inputs — Fond Blanc & Texte Noir + Marge Interne ===== */
+/* Règle globale : tous les champs de formulaire ont fond blanc + texte noir + marge interne aérée */
 input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="reset"]),
 textarea,
 select {
   background-color: #FFFFFF;
   color: #111827;
   -webkit-text-fill-color: #111827;
+  padding-left: 1.15rem !important;
+  padding-right: 1.15rem !important;
 }
 
 input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="reset"])::placeholder,
@@ -406,6 +408,21 @@ select:disabled {
 select option {
   background-color: #FFFFFF;
   color: #111827;
+}
+
+/* ===== Card Body & Form Spacing — Marges internes gauche/droite ===== */
+.card-body,
+.glass-card-body {
+  padding-left: 1.5rem !important;
+  padding-right: 1.5rem !important;
+}
+
+@media (min-width: 768px) {
+  .card-body,
+  .glass-card-body {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+  }
 }
 
 /* ===== Surcharge pour l'interface Admin (thème sombre) ===== */

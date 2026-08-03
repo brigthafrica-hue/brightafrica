@@ -102,7 +102,7 @@ export default function Safeguarding() {
           <div className="lg:col-span-2">
             <div 
               ref={formRef}
-              className={`transition-all duration-700 delay-200 ${isFormVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+              className={`glass-card p-6 sm:p-8 md:p-12 shadow-xl rounded-3xl transition-all duration-700 delay-200 ${isFormVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
             >
               <h2 className="font-heading text-2xl font-bold mb-3">{t.safeguarding.form_title}</h2>
               <p className="text-sm text-ba-text-muted mb-6 leading-relaxed">{t.safeguarding.form_subtitle}</p>
