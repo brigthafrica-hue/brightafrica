@@ -72,6 +72,21 @@ export interface AdminUser {
   createdAt: string;
 }
 
+export interface Subscriber {
+  id?: string;
+  email: string;
+  subscribedAt: string;
+}
+
+export interface NewsletterLog {
+  id: string;
+  subject: string;
+  content: string;
+  type: 'PROJECT' | 'NEWS' | 'DIRECT';
+  sentAt: string;
+  recipientCount: number;
+}
+
 export interface AdminData {
   impact: ImpactCounter[];
   pillars: Pillar[];
@@ -79,5 +94,7 @@ export interface AdminData {
   projects: Project[];
   contact: ContactInfo;
   users?: AdminUser[];
+  subscribers?: Subscriber[];
+  newsletterLogs?: NewsletterLog[];
 }
 

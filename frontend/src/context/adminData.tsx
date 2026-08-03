@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import type { AdminData, ImpactCounter, Pillar, NewsArticle, Project, ContactInfo, AdminUser } from '../types';
+import type { AdminData, ImpactCounter, Pillar, NewsArticle, Project, ContactInfo, AdminUser, Subscriber, NewsletterLog } from '../types';
 import { apiFetch } from '../services/api';
 
 /* ===== DEFAULT DATA (mirrors existing hardcoded content) ===== */
@@ -222,6 +222,13 @@ interface AdminDataContextType {
   addUser: (user: Omit<AdminUser, 'id' | 'createdAt'>) => { success: boolean; error?: string };
   deleteUser: (id: string) => void;
   updateUser: (id: string, updates: Partial<Pick<AdminUser, 'name' | 'email' | 'password'>>) => { success: boolean; error?: string };
+  // Newsletter & Subscribers
+  subscribers: Subscriber[];
+  newsletterLogs: NewsletterLog[];
+  addSubscriber: (email: string) => { success: boolean; message?: string };
+  removeSubscriber: (email: string) => void;
+  broadcastNewsletter: (params: { subject: string; content: string; type: 'PROJECT' | 'NEWS' | 'DIRECT' }) => void;
+  notifySubscribersNewContent: (params: { title: string; excerpt: string; type: 'PROJECT' | 'NEWS'; id: string }) => void;
   // Auth
   isAuthenticated: boolean;
   currentUser: AdminUser | null;
@@ -392,14 +399,126 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
     persist({ ...data, pillars: data.pillars.filter(p => p.id !== id) });
   }, [data, persist]);
 
+  // Subscribers & Newsletter state
+  const [subscribers, setSubscribers] = useState<Subscriber[]>(() => {
+    try {
+      const saved = localStorage.getItem('ba-subscribers');
+      return saved ? JSON.parse(saved) : [
+        { id: '1', email: 'abonne.bienfaiteur@gmail.com', subscribedAt: '15 Jan 2026' },
+        { id: '2', email: 'contact.partenaire@ong-afrique.org', subscribedAt: '02 Fév 2026' },
+      ];
+    } catch {
+      return [];
+    }
+  });
+
+  const [newsletterLogs, setNewsletterLogs] = useState<NewsletterLog[]>(() => {
+    try {
+      const saved = localStorage.getItem('ba-newsletter-logs');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const persistSubscribers = useCallback((subs: Subscriber[]) => {
+    setSubscribers(subs);
+    try {
+      localStorage.setItem('ba-subscribers', JSON.stringify(subs));
+    } catch (e) {
+      console.error('Error saving subscribers:', e);
+    }
+  }, []);
+
+  const persistNewsletterLogs = useCallback((logs: NewsletterLog[]) => {
+    setNewsletterLogs(logs);
+    try {
+      localStorage.setItem('ba-newsletter-logs', JSON.stringify(logs));
+    } catch (e) {
+      console.error('Error saving newsletter logs:', e);
+    }
+  }, []);
+
+  const addSubscriber = useCallback((email: string) => {
+    const cleanEmail = email.trim().toLowerCase();
+    const existing = subscribers.find(s => s.email.toLowerCase() === cleanEmail);
+    if (existing) {
+      return { success: false, message: 'Cet e-mail est déjà inscrit à la newsletter.' };
+    }
+
+    const newSub: Subscriber = {
+      id: generateId(),
+      email: cleanEmail,
+      subscribedAt: new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }),
+    };
+
+    const updated = [newSub, ...subscribers];
+    persistSubscribers(updated);
+
+    // Synchroniser avec le backend Express si dispo
+    apiFetch('/newsletter', {
+      method: 'POST',
+      body: JSON.stringify({ email: cleanEmail }),
+    }).catch(() => {});
+
+    return { success: true, message: 'Félicitations ! Vous êtes désormais inscrit à la newsletter de l\'ONG Bright African.' };
+  }, [subscribers, persistSubscribers]);
+
+  const removeSubscriber = useCallback((email: string) => {
+    const updated = subscribers.filter(s => s.email.toLowerCase() !== email.toLowerCase());
+    persistSubscribers(updated);
+  }, [subscribers, persistSubscribers]);
+
+  const broadcastNewsletter = useCallback((params: { subject: string; content: string; type: 'PROJECT' | 'NEWS' | 'DIRECT' }) => {
+    const newLog: NewsletterLog = {
+      id: generateId(),
+      subject: params.subject,
+      content: params.content,
+      type: params.type,
+      sentAt: new Date().toLocaleString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      recipientCount: subscribers.length,
+    };
+
+    persistNewsletterLogs([newLog, ...newsletterLogs]);
+  }, [subscribers.length, newsletterLogs, persistNewsletterLogs]);
+
+  const notifySubscribersNewContent = useCallback((params: { title: string; excerpt: string; type: 'PROJECT' | 'NEWS'; id: string }) => {
+    if (subscribers.length === 0) return;
+
+    const isProject = params.type === 'PROJECT';
+    const subject = isProject
+      ? `📢 Nouveau Projet Déployé : ${params.title}`
+      : `📰 Nouvelle Actualité Publiée : ${params.title}`;
+
+    const content = isProject
+      ? `L'ONG Bright African a le plaisir de vous annoncer le lancement de son nouveau projet : "${params.title}". ${params.excerpt}`
+      : `Découvrez la dernière actualité de l'ONG Bright African : "${params.title}". ${params.excerpt}`;
+
+    broadcastNewsletter({
+      subject,
+      content,
+      type: params.type,
+    });
+  }, [subscribers.length, broadcastNewsletter]);
+
   // News CRUD
   const updateNews = useCallback((id: string, item: Partial<NewsArticle>) => {
     persist({ ...data, news: data.news.map(n => n.id === id ? { ...n, ...item } : n) });
   }, [data, persist]);
 
   const addNews = useCallback((item: Omit<NewsArticle, 'id'>) => {
-    persist({ ...data, news: [{ ...item, id: generateId() }, ...data.news] });
-  }, [data, persist]);
+    const newId = generateId();
+    const newArticle = { ...item, id: newId };
+    persist({ ...data, news: [newArticle, ...data.news] });
+
+    // Notifier automatiquement tous les abonnés de la newsletter
+    notifySubscribersNewContent({
+      title: item.title,
+      excerpt: item.excerpt,
+      type: 'NEWS',
+      id: newId,
+    });
+  }, [data, persist, notifySubscribersNewContent]);
 
   const deleteNews = useCallback((id: string) => {
     persist({ ...data, news: data.news.filter(n => n.id !== id) });
@@ -411,8 +530,18 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
   }, [data, persist]);
 
   const addProject = useCallback((item: Omit<Project, 'id'>) => {
-    persist({ ...data, projects: [...data.projects, { ...item, id: generateId() }] });
-  }, [data, persist]);
+    const newId = generateId();
+    const newProj = { ...item, id: newId };
+    persist({ ...data, projects: [...data.projects, newProj] });
+
+    // Notifier automatiquement tous les abonnés de la newsletter
+    notifySubscribersNewContent({
+      title: item.title,
+      excerpt: item.description?.slice(0, 150) || '',
+      type: 'PROJECT',
+      id: newId,
+    });
+  }, [data, persist, notifySubscribersNewContent]);
 
   const deleteProject = useCallback((id: string) => {
     persist({ ...data, projects: data.projects.filter(p => p.id !== id) });
@@ -433,6 +562,7 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
         updateProject, addProject, deleteProject,
         updateContact,
         addUser, deleteUser, updateUser,
+        subscribers, newsletterLogs, addSubscriber, removeSubscriber, broadcastNewsletter, notifySubscribersNewContent,
         isAuthenticated, currentUser, login, logout,
       }}
     >

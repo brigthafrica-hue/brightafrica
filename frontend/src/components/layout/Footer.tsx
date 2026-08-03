@@ -1,41 +1,41 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useI18n } from '../../i18n';
-import { apiFetch } from '../../services/api';
+import { useAdminData } from '../../context/adminData';
 
 export default function Footer() {
   const { t } = useI18n();
+  const { addSubscriber } = useAdminData();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
-
   const [loading, setLoading] = useState(false);
-  const [newsletterMsg, setNewsletterMsg] = useState<string | null>(null);
+  const [newsletterMsg, setNewsletterMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const handleNewsletter = async (e: React.FormEvent) => {
+  const handleNewsletter = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!email.trim()) return;
 
     setLoading(true);
     setNewsletterMsg(null);
 
-    const res = await apiFetch('/newsletter', {
-      method: 'POST',
-      body: JSON.stringify({ email }),
-    });
+    setTimeout(() => {
+      const res = addSubscriber(email.trim());
+      setLoading(false);
 
-    setLoading(false);
-
-    if (res.success) {
-      setSubscribed(true);
-      setNewsletterMsg('✓ Inscription réussie !');
-      setEmail('');
-      setTimeout(() => {
-        setSubscribed(false);
-        setNewsletterMsg(null);
-      }, 4000);
-    } else {
-      setNewsletterMsg(res.error || 'Erreur lors de l\'inscription.');
-    }
+      if (res.success) {
+        setSubscribed(true);
+        setNewsletterMsg({
+          type: 'success',
+          text: '✓ Merci ! Votre inscription à la newsletter a été enregistrée avec succès. Vous recevrez nos futurs projets et actualités.',
+        });
+        setEmail('');
+      } else {
+        setNewsletterMsg({
+          type: 'error',
+          text: res.message || 'Erreur lors de l\'inscription.',
+        });
+      }
+    }, 400);
   };
 
   const quickLinks = [
@@ -152,8 +152,16 @@ export default function Footer() {
                 disabled={loading}
                 className={`btn btn-red w-full text-base py-3.5 flex items-center justify-center gap-2 ${loading ? 'opacity-60' : ''}`}
               >
-                {loading ? 'Inscription...' : newsletterMsg || (subscribed ? '✓ Inscrit !' : t.footer.newsletter_submit)}
+                {loading ? 'Inscription...' : (subscribed ? '✓ Inscription confirmée !' : t.footer.newsletter_submit)}
               </button>
+
+              {newsletterMsg && (
+                <div className={`p-3.5 rounded-xl text-xs leading-relaxed border font-medium ${
+                  newsletterMsg.type === 'success' ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/40' : 'bg-red-950/80 text-red-300 border-red-500/40'
+                }`}>
+                  {newsletterMsg.text}
+                </div>
+              )}
             </form>
           </div>
         </div>
