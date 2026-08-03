@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useCallback, useEffect, type React
 import type { AdminData, ImpactCounter, Pillar, NewsArticle, Project, ContactInfo, AdminUser, Subscriber, NewsletterLog } from '../types';
 import { apiFetch } from '../services/api';
 
-/* ===== DEFAULT DATA (mirrors existing hardcoded content) ===== */
+/* ===== DONNÉES PAR DÉFAUT (affichées pendant le chargement initial) ===== */
 const DEFAULT_DATA: AdminData = {
   impact: [
     { id: '1', value: 2500, label: 'Enfants accompagnés', label_en: 'Children supported', color: 'ba-red' },
@@ -107,17 +107,6 @@ const DEFAULT_DATA: AdminData = {
       category_en: 'Protection',
       color: 'ba-green',
     },
-    {
-      id: '3',
-      title: 'Atelier de formation sur la santé communautaire',
-      title_en: 'Community health training workshop',
-      excerpt: 'Organisation d\'un atelier de formation de trois jours pour les agents de santé communautaires locaux.',
-      excerpt_en: 'Organization of a three-day training workshop for local community health workers.',
-      date: '18 Mai 2026',
-      category: 'Santé',
-      category_en: 'Health',
-      color: 'ba-red',
-    },
   ],
   projects: [
     {
@@ -171,37 +160,16 @@ const DEFAULT_DATA: AdminData = {
   users: [],
 };
 
-const STORAGE_KEY = 'ba-admin-data';
-
-// Read from localStorage cache (used as fallback while cloud loads)
-function loadCachedData(): AdminData {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored) as AdminData;
-      return { ...parsed, users: parsed.users || [] };
-    }
-  } catch {
-    // Ignore parse errors
-  }
-  return DEFAULT_DATA;
-}
-
-// Write to localStorage cache (offline fallback)
-function cacheData(data: AdminData) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch (err) {
-    console.warn('LocalStorage cache warning:', err);
-  }
-}
-
-/* ===== Context ===== */
+/* ===== Context Type ===== */
 interface AdminDataContextType {
   data: AdminData;
-  isSyncing: boolean;       // true while saving to MongoDB Atlas
-  syncError: string | null; // last sync error message
-  isCloudLoaded: boolean;   // true once data fetched from cloud
+  // États de connexion base de données
+  isLoading: boolean;       // true pendant le chargement depuis MongoDB
+  dbConnected: boolean;     // true si MongoDB Atlas est accessible
+  dbError: string | null;   // message d'erreur si DB inaccessible
+  isSyncing: boolean;       // true pendant une sauvegarde vers MongoDB
+  syncError: string | null; // erreur de sauvegarde
+  retryConnection: () => void; // relancer la connexion à MongoDB
   // Impact
   updateImpact: (id: string, item: Partial<ImpactCounter>) => void;
   addImpact: (item: Omit<ImpactCounter, 'id'>) => void;
@@ -242,16 +210,39 @@ const AdminDataContext = createContext<AdminDataContextType | undefined>(undefin
 
 let nextId = 100;
 function generateId(): string {
-  return String(++nextId);
+  return String(Date.now()) + String(++nextId);
+}
+
+/* ===== Fonction de sauvegarde vers MongoDB Atlas ===== */
+async function saveToCloud(newData: AdminData): Promise<boolean> {
+  try {
+    const res = await apiFetch('/content', {
+      method: 'PUT',
+      body: JSON.stringify({
+        impact: newData.impact,
+        pillars: newData.pillars,
+        news: newData.news,
+        projects: newData.projects,
+        contact: newData.contact,
+        users: newData.users || [],
+      }),
+    });
+    return res.success === true;
+  } catch {
+    return false;
+  }
 }
 
 export function AdminDataProvider({ children }: { children: ReactNode }) {
-  // Start from cached localStorage data for instant render; cloud data will replace this
-  const [data, setData] = useState<AdminData>(loadCachedData);
+  // ── État principal — données chargées depuis MongoDB Atlas ──
+  const [data, setData] = useState<AdminData>(DEFAULT_DATA);
+  const [isLoading, setIsLoading] = useState(true);
+  const [dbConnected, setDbConnected] = useState(false);
+  const [dbError, setDbError] = useState<string | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
-  const [isCloudLoaded, setIsCloudLoaded] = useState(false);
 
+  // ── Auth (sessionStorage uniquement — pas de localStorage) ──
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     return sessionStorage.getItem('ba-admin-auth') === 'true';
   });
@@ -260,128 +251,82 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
     return stored ? JSON.parse(stored) : null;
   });
 
-  // ── On mount: charger les données MongoDB Atlas (avec migration locale) ──
-  useEffect(() => {
-    let cancelled = false;
-    async function fetchCloudData() {
-      try {
-        const res = await apiFetch<AdminData>('/content');
-        if (!cancelled && res.success && res.data) {
-          const cloudData: AdminData = {
-            ...res.data,
-            users: res.data.users || [],
-          };
-
-          // Lire les données locales pour comparaison
-          const localData = loadCachedData();
-
-          // Si le localStorage contient PLUS de données que le cloud (admin a ajouté
-          // des éléments AVANT l'activation de la sync cloud), on migre le local vers cloud
-          const localHasMoreProjects = localData.projects.length > cloudData.projects.length;
-          const localHasMoreNews = localData.news.length > cloudData.news.length;
-          const localHasMorePillars = localData.pillars.length > cloudData.pillars.length;
-          const localHasMoreImpact = localData.impact.length > cloudData.impact.length;
-          const localContactDiffers =
-            JSON.stringify(localData.contact) !== JSON.stringify(DEFAULT_DATA.contact) &&
-            JSON.stringify(localData.contact) !== JSON.stringify(cloudData.contact);
-
-          const needsMigration =
-            localHasMoreProjects || localHasMoreNews ||
-            localHasMorePillars || localHasMoreImpact || localContactDiffers;
-
-          if (needsMigration) {
-            // Fusionner : prendre les données les plus complètes de chaque section
-            const mergedData: AdminData = {
-              ...cloudData,
-              projects: localHasMoreProjects ? localData.projects : cloudData.projects,
-              news: localHasMoreNews ? localData.news : cloudData.news,
-              pillars: localHasMorePillars ? localData.pillars : cloudData.pillars,
-              impact: localHasMoreImpact ? localData.impact : cloudData.impact,
-              contact: localContactDiffers ? localData.contact : cloudData.contact,
-              users: cloudData.users || localData.users || [],
-            };
-            console.log('[BrightAfrican] 📤 Données locales plus récentes — migration vers MongoDB Atlas...');
-            setData(mergedData);
-            cacheData(mergedData);
-            // Pousser les données fusionnées vers MongoDB Atlas immédiatement
-            await apiFetch('/content', {
-              method: 'PUT',
-              body: JSON.stringify({
-                impact: mergedData.impact,
-                pillars: mergedData.pillars,
-                news: mergedData.news,
-                projects: mergedData.projects,
-                contact: mergedData.contact,
-                users: mergedData.users || [],
-              }),
-            });
-            console.log('[BrightAfrican] ✅ Migration locale → cloud réussie !');
-          } else {
-            // Cloud est la source de vérité
-            setData(cloudData);
-            cacheData(cloudData);
-            console.log('[BrightAfrican] ✅ Contenu chargé depuis MongoDB Atlas');
-          }
-
-          setIsCloudLoaded(true);
-          setSyncError(null);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          console.warn('[BrightAfrican] ⚠️ Backend inaccessible, données locales utilisées:', err);
-          setSyncError('Hors ligne — données locales utilisées.');
-          setIsCloudLoaded(false);
-        }
-      }
-    }
-    fetchCloudData();
-    return () => { cancelled = true; };
-  }, []);
-
-  // ── persist: save to MongoDB Atlas + update localStorage cache ───────────
-  const persist = useCallback(async (newData: AdminData) => {
-    setData(newData);
-    cacheData(newData); // immediate local cache
-    setIsSyncing(true);
-    setSyncError(null);
+  // ── Chargement depuis MongoDB Atlas ──────────────────────────────────────
+  const loadFromCloud = useCallback(async () => {
+    setIsLoading(true);
+    setDbError(null);
     try {
-      const res = await apiFetch('/content', {
-        method: 'PUT',
-        body: JSON.stringify({
-          impact: newData.impact,
-          pillars: newData.pillars,
-          news: newData.news,
-          projects: newData.projects,
-          contact: newData.contact,
-          users: newData.users || [],
-        }),
-      });
-      if (!res.success) {
-        console.warn('[BrightAfrican] Cloud sync warning:', res.error);
-        setSyncError('Sauvegarde cloud échouée. Données conservées localement.');
+      const res = await apiFetch<AdminData>('/content');
+      if (res.success && res.data) {
+        setData({ ...res.data, users: res.data.users || [] });
+        setDbConnected(true);
+        setDbError(null);
+        console.log('[BrightAfrican] ✅ Données chargées depuis MongoDB Atlas');
       } else {
-        setSyncError(null);
-        console.log('[BrightAfrican] ✅ Données synchronisées vers MongoDB Atlas');
+        setDbConnected(false);
+        setDbError(
+          'Impossible de charger les données depuis la base de données. ' +
+          'Vérifiez que le serveur backend (Render) est en ligne.'
+        );
+        console.error('[BrightAfrican] ❌ Échec du chargement:', res.error);
       }
     } catch (err) {
-      console.warn('[BrightAfrican] Cloud sync error (offline?):', err);
-      setSyncError('Hors ligne — modification sauvegardée localement uniquement.');
+      setDbConnected(false);
+      setDbError(
+        'Base de données non accessible. Le serveur backend est peut-être hors ligne. ' +
+        'Cliquez sur "Réessayer" pour tenter une nouvelle connexion.'
+      );
+      console.error('[BrightAfrican] ❌ Backend inaccessible:', err);
     } finally {
-      setIsSyncing(false);
+      setIsLoading(false);
     }
   }, []);
 
-  // Auth (Async with Backend API check + local fallback)
+  // Charger au démarrage
+  useEffect(() => {
+    loadFromCloud();
+  }, [loadFromCloud]);
+
+  // Fonction de reconnexion manuelle (bouton "Réessayer" dans l'admin)
+  const retryConnection = useCallback(() => {
+    loadFromCloud();
+  }, [loadFromCloud]);
+
+  // ── Sauvegarde vers MongoDB Atlas (SANS localStorage) ────────────────────
+  const persist = useCallback(async (newData: AdminData) => {
+    // Mise à jour optimiste de l'interface immédiatement
+    setData(newData);
+    setIsSyncing(true);
+    setSyncError(null);
+
+    const success = await saveToCloud(newData);
+
+    if (success) {
+      setSyncError(null);
+      setDbConnected(true);
+      setDbError(null);
+      console.log('[BrightAfrican] ✅ Données sauvegardées dans MongoDB Atlas');
+    } else {
+      setSyncError(
+        '⚠️ La sauvegarde a échoué. La base de données est peut-être hors ligne. ' +
+        'Vos modifications sont visibles ici mais ne sont pas encore enregistrées.'
+      );
+      setDbConnected(false);
+      console.error('[BrightAfrican] ❌ Échec sauvegarde cloud');
+    }
+    setIsSyncing(false);
+  }, []);
+
+  // ── Auth ─────────────────────────────────────────────────────────────────
   const login = useCallback(async (username: string, password: string): Promise<boolean> => {
     const trimUser = username.trim().toLowerCase();
 
-    // 1. Tenter l'authentification auprès du serveur Backend
+    // 1. Authentification via le backend
     try {
       const res = await apiFetch('/auth/login', {
         method: 'POST',
         body: JSON.stringify({ username: trimUser, password }),
       });
-
       if (res.success && res.data?.user) {
         setIsAuthenticated(true);
         setCurrentUser(res.data.user);
@@ -393,12 +338,14 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
         return true;
       }
     } catch {
-      // Ignorer l'erreur réseau et tenter le fallback local
+      // Ignorer l'erreur réseau et tenter le super-admin local
     }
 
-    // 2. Fallback pour Super Admin local
-    const adminPassword = localStorage.getItem('ba-admin-password') || 'BrightAfrica2026';
-    if ((trimUser === 'admin' || trimUser === 'administrator' || trimUser === 'brightafrica') && password === adminPassword) {
+    // 2. Super Admin local (mot de passe fixe)
+    if (
+      (trimUser === 'admin' || trimUser === 'administrator' || trimUser === 'brightafrica') &&
+      password === 'BrightAfrica2026'
+    ) {
       const user: AdminUser = {
         id: 'super-admin',
         username: 'admin',
@@ -414,11 +361,10 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
       return true;
     }
 
-    // 3. Fallback pour Éditeurs locaux dans data.users
+    // 3. Éditeurs enregistrés dans MongoDB
     const foundUser = (data.users || []).find(
       u => u.username.toLowerCase() === trimUser && u.password === password
     );
-
     if (foundUser) {
       setIsAuthenticated(true);
       setCurrentUser(foundUser);
@@ -435,46 +381,39 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
     setCurrentUser(null);
     sessionStorage.removeItem('ba-admin-auth');
     sessionStorage.removeItem('ba-admin-user');
+    sessionStorage.removeItem('ba-admin-token');
   }, []);
 
-  // Users CRUD (Max 5 editors)
+  // ── Users CRUD ───────────────────────────────────────────────────────────
   const addUser = useCallback((userItem: Omit<AdminUser, 'id' | 'createdAt'>): { success: boolean; error?: string } => {
     const currentUsers = data.users || [];
     if (currentUsers.length >= 5) {
       return { success: false, error: 'Limite maximale atteinte. Vous ne pouvez pas ajouter plus de 5 éditeurs.' };
     }
-
     const exists = currentUsers.some(u => u.username.toLowerCase() === userItem.username.trim().toLowerCase());
     if (exists || userItem.username.trim().toLowerCase() === 'admin') {
       return { success: false, error: 'Ce nom d\'utilisateur est déjà utilisé.' };
     }
-
     const newUser: AdminUser = {
       ...userItem,
       username: userItem.username.trim(),
       id: generateId(),
       createdAt: new Date().toISOString().split('T')[0],
     };
-
     persist({ ...data, users: [...currentUsers, newUser] });
     return { success: true };
   }, [data, persist]);
 
   const deleteUser = useCallback((id: string) => {
-    const currentUsers = data.users || [];
-    persist({ ...data, users: currentUsers.filter(u => u.id !== id) });
+    persist({ ...data, users: (data.users || []).filter(u => u.id !== id) });
   }, [data, persist]);
 
   const updateUser = useCallback((id: string, updates: Partial<Pick<AdminUser, 'name' | 'email' | 'password'>>): { success: boolean; error?: string } => {
     const currentUsers = data.users || [];
     const userIndex = currentUsers.findIndex(u => u.id === id);
-    if (userIndex === -1) {
-      return { success: false, error: 'Utilisateur introuvable.' };
-    }
+    if (userIndex === -1) return { success: false, error: 'Utilisateur introuvable.' };
     const updatedUser = { ...currentUsers[userIndex], ...updates };
-    const newUsers = currentUsers.map(u => u.id === id ? updatedUser : u);
-    persist({ ...data, users: newUsers });
-    // Mettre à jour la session courante si c'est l'utilisateur connecté
+    persist({ ...data, users: currentUsers.map(u => u.id === id ? updatedUser : u) });
     setCurrentUser(prev => prev?.id === id ? { ...prev, ...updates } : prev);
     const sessionUser = sessionStorage.getItem('ba-admin-user');
     if (sessionUser) {
@@ -486,7 +425,7 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
     return { success: true };
   }, [data, persist]);
 
-  // Impact CRUD
+  // ── Impact CRUD ──────────────────────────────────────────────────────────
   const updateImpact = useCallback((id: string, item: Partial<ImpactCounter>) => {
     persist({ ...data, impact: data.impact.map(c => c.id === id ? { ...c, ...item } : c) });
   }, [data, persist]);
@@ -499,7 +438,7 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
     persist({ ...data, impact: data.impact.filter(c => c.id !== id) });
   }, [data, persist]);
 
-  // Pillars CRUD
+  // ── Pillars CRUD ─────────────────────────────────────────────────────────
   const updatePillar = useCallback((id: string, item: Partial<Pillar>) => {
     persist({ ...data, pillars: data.pillars.map(p => p.id === id ? { ...p, ...item } : p) });
   }, [data, persist]);
@@ -512,45 +451,9 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
     persist({ ...data, pillars: data.pillars.filter(p => p.id !== id) });
   }, [data, persist]);
 
-  // Subscribers & Newsletter state
-  const [subscribers, setSubscribers] = useState<Subscriber[]>(() => {
-    try {
-      const saved = localStorage.getItem('ba-subscribers');
-      return saved ? JSON.parse(saved) : [
-        { id: '1', email: 'abonne.bienfaiteur@gmail.com', subscribedAt: '15 Jan 2026' },
-        { id: '2', email: 'contact.partenaire@ong-afrique.org', subscribedAt: '02 Fév 2026' },
-      ];
-    } catch {
-      return [];
-    }
-  });
-
-  const [newsletterLogs, setNewsletterLogs] = useState<NewsletterLog[]>(() => {
-    try {
-      const saved = localStorage.getItem('ba-newsletter-logs');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
-
-  const persistSubscribers = useCallback((subs: Subscriber[]) => {
-    setSubscribers(subs);
-    try {
-      localStorage.setItem('ba-subscribers', JSON.stringify(subs));
-    } catch (e) {
-      console.error('Error saving subscribers:', e);
-    }
-  }, []);
-
-  const persistNewsletterLogs = useCallback((logs: NewsletterLog[]) => {
-    setNewsletterLogs(logs);
-    try {
-      localStorage.setItem('ba-newsletter-logs', JSON.stringify(logs));
-    } catch (e) {
-      console.error('Error saving newsletter logs:', e);
-    }
-  }, []);
+  // ── Subscribers (en mémoire — les emails vont au backend via POST /newsletter) ──
+  const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
+  const [newsletterLogs, setNewsletterLogs] = useState<NewsletterLog[]>([]);
 
   const addSubscriber = useCallback((email: string) => {
     const cleanEmail = email.trim().toLowerCase();
@@ -558,29 +461,23 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
     if (existing) {
       return { success: false, message: 'Cet e-mail est déjà inscrit à la newsletter.' };
     }
-
     const newSub: Subscriber = {
       id: generateId(),
       email: cleanEmail,
       subscribedAt: new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }),
     };
-
-    const updated = [newSub, ...subscribers];
-    persistSubscribers(updated);
-
-    // Synchroniser avec le backend Express si dispo
+    setSubscribers(prev => [newSub, ...prev]);
+    // Enregistrer l'abonné dans le backend MongoDB
     apiFetch('/newsletter', {
       method: 'POST',
       body: JSON.stringify({ email: cleanEmail }),
     }).catch(() => {});
-
     return { success: true, message: 'Félicitations ! Vous êtes désormais inscrit à la newsletter de l\'ONG Bright African.' };
-  }, [subscribers, persistSubscribers]);
+  }, [subscribers]);
 
   const removeSubscriber = useCallback((email: string) => {
-    const updated = subscribers.filter(s => s.email.toLowerCase() !== email.toLowerCase());
-    persistSubscribers(updated);
-  }, [subscribers, persistSubscribers]);
+    setSubscribers(prev => prev.filter(s => s.email.toLowerCase() !== email.toLowerCase()));
+  }, []);
 
   const broadcastNewsletter = useCallback((params: { subject: string; content: string; type: 'PROJECT' | 'NEWS' | 'DIRECT' }) => {
     const newLog: NewsletterLog = {
@@ -591,30 +488,22 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
       sentAt: new Date().toLocaleString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
       recipientCount: subscribers.length,
     };
-
-    persistNewsletterLogs([newLog, ...newsletterLogs]);
-  }, [subscribers.length, newsletterLogs, persistNewsletterLogs]);
+    setNewsletterLogs(prev => [newLog, ...prev]);
+  }, [subscribers.length]);
 
   const notifySubscribersNewContent = useCallback((params: { title: string; excerpt: string; type: 'PROJECT' | 'NEWS'; id: string }) => {
     if (subscribers.length === 0) return;
-
     const isProject = params.type === 'PROJECT';
     const subject = isProject
       ? `📢 Nouveau Projet Déployé : ${params.title}`
       : `📰 Nouvelle Actualité Publiée : ${params.title}`;
-
     const content = isProject
       ? `L'ONG Bright African a le plaisir de vous annoncer le lancement de son nouveau projet : "${params.title}". ${params.excerpt}`
       : `Découvrez la dernière actualité de l'ONG Bright African : "${params.title}". ${params.excerpt}`;
-
-    broadcastNewsletter({
-      subject,
-      content,
-      type: params.type,
-    });
+    broadcastNewsletter({ subject, content, type: params.type });
   }, [subscribers.length, broadcastNewsletter]);
 
-  // News CRUD
+  // ── News CRUD ────────────────────────────────────────────────────────────
   const updateNews = useCallback((id: string, item: Partial<NewsArticle>) => {
     persist({ ...data, news: data.news.map(n => n.id === id ? { ...n, ...item } : n) });
   }, [data, persist]);
@@ -623,21 +512,14 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
     const newId = generateId();
     const newArticle = { ...item, id: newId };
     persist({ ...data, news: [newArticle, ...data.news] });
-
-    // Notifier automatiquement tous les abonnés de la newsletter
-    notifySubscribersNewContent({
-      title: item.title,
-      excerpt: item.excerpt,
-      type: 'NEWS',
-      id: newId,
-    });
+    notifySubscribersNewContent({ title: item.title, excerpt: item.excerpt, type: 'NEWS', id: newId });
   }, [data, persist, notifySubscribersNewContent]);
 
   const deleteNews = useCallback((id: string) => {
     persist({ ...data, news: data.news.filter(n => n.id !== id) });
   }, [data, persist]);
 
-  // Projects CRUD
+  // ── Projects CRUD ────────────────────────────────────────────────────────
   const updateProject = useCallback((id: string, item: Partial<Project>) => {
     persist({ ...data, projects: data.projects.map(p => p.id === id ? { ...p, ...item } : p) });
   }, [data, persist]);
@@ -646,21 +528,14 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
     const newId = generateId();
     const newProj = { ...item, id: newId };
     persist({ ...data, projects: [...data.projects, newProj] });
-
-    // Notifier automatiquement tous les abonnés de la newsletter
-    notifySubscribersNewContent({
-      title: item.title,
-      excerpt: item.description?.slice(0, 150) || '',
-      type: 'PROJECT',
-      id: newId,
-    });
+    notifySubscribersNewContent({ title: item.title, excerpt: item.description?.slice(0, 150) || '', type: 'PROJECT', id: newId });
   }, [data, persist, notifySubscribersNewContent]);
 
   const deleteProject = useCallback((id: string) => {
     persist({ ...data, projects: data.projects.filter(p => p.id !== id) });
   }, [data, persist]);
 
-  // Contact
+  // ── Contact ──────────────────────────────────────────────────────────────
   const updateContact = useCallback((info: Partial<ContactInfo>) => {
     persist({ ...data, contact: { ...data.contact, ...info } });
   }, [data, persist]);
@@ -669,7 +544,12 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
     <AdminDataContext.Provider
       value={{
         data,
-        isSyncing, syncError, isCloudLoaded,
+        isLoading,
+        dbConnected,
+        dbError,
+        isSyncing,
+        syncError,
+        retryConnection,
         updateImpact, addImpact, deleteImpact,
         updatePillar, addPillar, deletePillar,
         updateNews, addNews, deleteNews,
