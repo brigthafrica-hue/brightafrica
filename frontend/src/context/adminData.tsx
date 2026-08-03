@@ -260,7 +260,7 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
     return stored ? JSON.parse(stored) : null;
   });
 
-  // ── On mount: load live data from MongoDB Atlas ──────────────────────────
+  // ── On mount: charger les données MongoDB Atlas (avec migration locale) ──
   useEffect(() => {
     let cancelled = false;
     async function fetchCloudData() {
@@ -271,15 +271,64 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
             ...res.data,
             users: res.data.users || [],
           };
-          setData(cloudData);
-          cacheData(cloudData); // update local cache with cloud data
+
+          // Lire les données locales pour comparaison
+          const localData = loadCachedData();
+
+          // Si le localStorage contient PLUS de données que le cloud (admin a ajouté
+          // des éléments AVANT l'activation de la sync cloud), on migre le local vers cloud
+          const localHasMoreProjects = localData.projects.length > cloudData.projects.length;
+          const localHasMoreNews = localData.news.length > cloudData.news.length;
+          const localHasMorePillars = localData.pillars.length > cloudData.pillars.length;
+          const localHasMoreImpact = localData.impact.length > cloudData.impact.length;
+          const localContactDiffers =
+            JSON.stringify(localData.contact) !== JSON.stringify(DEFAULT_DATA.contact) &&
+            JSON.stringify(localData.contact) !== JSON.stringify(cloudData.contact);
+
+          const needsMigration =
+            localHasMoreProjects || localHasMoreNews ||
+            localHasMorePillars || localHasMoreImpact || localContactDiffers;
+
+          if (needsMigration) {
+            // Fusionner : prendre les données les plus complètes de chaque section
+            const mergedData: AdminData = {
+              ...cloudData,
+              projects: localHasMoreProjects ? localData.projects : cloudData.projects,
+              news: localHasMoreNews ? localData.news : cloudData.news,
+              pillars: localHasMorePillars ? localData.pillars : cloudData.pillars,
+              impact: localHasMoreImpact ? localData.impact : cloudData.impact,
+              contact: localContactDiffers ? localData.contact : cloudData.contact,
+              users: cloudData.users || localData.users || [],
+            };
+            console.log('[BrightAfrican] 📤 Données locales plus récentes — migration vers MongoDB Atlas...');
+            setData(mergedData);
+            cacheData(mergedData);
+            // Pousser les données fusionnées vers MongoDB Atlas immédiatement
+            await apiFetch('/content', {
+              method: 'PUT',
+              body: JSON.stringify({
+                impact: mergedData.impact,
+                pillars: mergedData.pillars,
+                news: mergedData.news,
+                projects: mergedData.projects,
+                contact: mergedData.contact,
+                users: mergedData.users || [],
+              }),
+            });
+            console.log('[BrightAfrican] ✅ Migration locale → cloud réussie !');
+          } else {
+            // Cloud est la source de vérité
+            setData(cloudData);
+            cacheData(cloudData);
+            console.log('[BrightAfrican] ✅ Contenu chargé depuis MongoDB Atlas');
+          }
+
           setIsCloudLoaded(true);
           setSyncError(null);
-          console.log('[BrightAfrican] ✅ Site content loaded from MongoDB Atlas');
         }
       } catch (err) {
         if (!cancelled) {
-          console.warn('[BrightAfrican] ⚠️ Could not reach backend, using cached data:', err);
+          console.warn('[BrightAfrican] ⚠️ Backend inaccessible, données locales utilisées:', err);
           setSyncError('Hors ligne — données locales utilisées.');
           setIsCloudLoaded(false);
         }
