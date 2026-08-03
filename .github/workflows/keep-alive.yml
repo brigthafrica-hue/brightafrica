@@ -1,0 +1,15 @@
+name: Keep Backend Awake (Render Ping)
+
+on:
+  schedule:
+    # Exécute toutes les 10 minutes pour empêcher Render de s'endormir
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Render API Health
+        run: |
+          curl -s -f https://brightafrica-api.onrender.com/health || echo "Render ping sent"
